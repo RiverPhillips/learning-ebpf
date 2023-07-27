@@ -14,7 +14,8 @@ struct data_t {
 
 int hello(void *ctx) {
     struct data_t data = {};
-    char message[12] = "Hello World!"; 
+    char oddMessage[12] = "Hello Odd!"; 
+    char evenMessage[12] = "Hello Even!";
 
     data.pid = bpf_get_current_pid_tgid() >> 32;
     data.uid = bpf_get_current_uid_gid() & 0xFFFFFFFF;
@@ -22,10 +23,9 @@ int hello(void *ctx) {
     bpf_get_current_comm(&data.command, sizeof(data.command));
 
     if (data.pid % 2 == 0) {
-        bpf_probe_read(&data.message, sizeof(data.message), &message);
+        bpf_probe_read(&data.message, sizeof(data.message), &evenMessage);
     } else {
-        bpf_probe_read(&data.message, sizeof(data.message), &message);
-
+        bpf_probe_read(&data.message, sizeof(data.message), &oddMessage);
     }
 
     output.perf_submit(ctx, &data, sizeof(data));

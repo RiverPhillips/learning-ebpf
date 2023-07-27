@@ -25,12 +25,12 @@ int hello(void *ctx) {
 """
 
 b = BPF(text=program)
-syscall = b.get_syscall_fnname("execve")
-b.attach_kprobe(event=syscall, fn_name="hello")
+b.attach_raw_tracepoint(tp="sys_enter", fn_name="hello")
+
 
 while True:
     sleep(2)
     s = ""
     for k,v in b["counter_table"].items():
-        s += f"ID {k.value} : {v.value}\n"
+        s += f"ID {k.value} : {v.value} "
     print(s)
